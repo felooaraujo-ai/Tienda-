@@ -10,6 +10,11 @@ COPY . /var/www/html/
 # Permisos (necesario para que el webhook pueda escribir api/webhook.log)
 RUN chown -R www-data:www-data /var/www/html
 
-# Railway inyecta el puerto en la variable $PORT. Apache debe escuchar ahí.
-# Reescribimos el puerto al arrancar el contenedor.
-CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen ${PORT:-8080}/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:${PORT:-8080}>/\" /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
+# Script de arranque que hace que Apache escuche en $PORT (Railway)
+COPY docker-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
+RUN chmod +x /usr/local/bin/railway-entrypoint.sh
+
+# Railway enruta a este puerto por defecto si no inyecta $PORT
+EXPOSE 8080
+
+CMD ["/usr/local/bin/railway-entrypoint.sh"]

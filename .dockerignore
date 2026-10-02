@@ -1,0 +1,6 @@
+.git
+.gitignore
+.env
+api/webhook.log
+.DS_Store
+Thumbs.db
