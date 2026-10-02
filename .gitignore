@@ -1,0 +1,12 @@
+# Dependencias de Composer (se instalan en el build, no se versionan)
+/vendor/
+
+# Variables de entorno locales (NUNCA subir credenciales reales)
+.env
+
+# Log del webhook de Mercado Pago
+api/webhook.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
