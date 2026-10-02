@@ -4,10 +4,12 @@ FROM php:8.2-apache
 # Extensiones necesarias: mysqli (DB). cURL ya viene incluido en la imagen.
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 
-# Dejar un solo MPM activo (prefork, el que usa mod_php).
-# Evita el error "More than one MPM loaded" que impide arrancar Apache.
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
- && a2enmod mpm_prefork
+# Dejar UN SOLO MPM activo (prefork, el que usa mod_php).
+# Se borran a la fuerza todos los symlinks mpm_* de mods-enabled y se deja
+# únicamente prefork. Evita el error "More than one MPM loaded".
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+ && ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load \
+ && ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
 # Copiar todo el proyecto al document root de Apache
 COPY . /var/www/html/
